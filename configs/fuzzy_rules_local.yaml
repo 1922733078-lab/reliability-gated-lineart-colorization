@@ -1,0 +1,219 @@
+labels:
+- E0
+- E5
+- E14
+- E_FULL
+fallback_label: E14
+priors:
+  E0: 0.03
+  E5: 0.05
+  E14: 0.04
+  E_FULL: 0.0
+variables:
+  line_density:
+    very_low:
+      type: trapmf
+      params:
+      - 0.0
+      - 0.0
+      - 0.03
+      - 0.06
+    low:
+      type: trimf
+      params:
+      - 0.03
+      - 0.08
+      - 0.14
+    medium:
+      type: trimf
+      params:
+      - 0.1
+      - 0.18
+      - 0.28
+    high:
+      type: trapmf
+      params:
+      - 0.22
+      - 0.3
+      - 1.0
+      - 1.0
+  edge_entropy:
+    low:
+      type: trapmf
+      params:
+      - 0.0
+      - 0.0
+      - 0.84
+      - 0.89
+    medium:
+      type: trimf
+      params:
+      - 0.85
+      - 0.91
+      - 0.96
+    high:
+      type: trapmf
+      params:
+      - 0.92
+      - 0.96
+      - 1.0
+      - 1.0
+  blank_ratio:
+    low:
+      type: trapmf
+      params:
+      - 0.0
+      - 0.0
+      - 0.81
+      - 0.85
+    medium:
+      type: trimf
+      params:
+      - 0.83
+      - 0.88
+      - 0.93
+    high:
+      type: trapmf
+      params:
+      - 0.9
+      - 0.94
+      - 1.0
+      - 1.0
+  component_density:
+    low:
+      type: trapmf
+      params:
+      - 0.0
+      - 0.0
+      - 8.0
+      - 14.0
+    medium:
+      type: trimf
+      params:
+      - 10.0
+      - 19.0
+      - 30.0
+    high:
+      type: trapmf
+      params:
+      - 24.0
+      - 34.0
+      - 80.0
+      - 80.0
+  complexity_score:
+    low:
+      type: trapmf
+      params:
+      - 0.0
+      - 0.0
+      - 0.52
+      - 0.6
+    medium:
+      type: trimf
+      params:
+      - 0.56
+      - 0.66
+      - 0.76
+    high:
+      type: trapmf
+      params:
+      - 0.7
+      - 0.78
+      - 1.0
+      - 1.0
+rules:
+- name: extremely_blank_minimal_prefers_efull
+  if:
+    line_density: very_low
+    blank_ratio: high
+    component_density: low
+    complexity_score: low
+  then: E_FULL
+  weight: 1.5
+  operator: min
+- name: sparse_uncertain_prefers_e5
+  if:
+    line_density: low
+    edge_entropy: medium
+    blank_ratio: high
+  then: E5
+  weight: 1.15
+  operator: mean
+- name: low_density_complex_prefers_e5
+  if:
+    line_density: low
+    complexity_score: high
+    blank_ratio: medium
+  then: E5
+  weight: 1.0
+  operator: mean
+- name: broad_middle_prefers_e5
+  if:
+    complexity_score: medium
+    component_density: medium
+    edge_entropy: medium
+  then: E5
+  weight: 0.95
+  operator: mean
+- name: dense_complex_prefers_e14
+  if:
+    line_density: high
+    component_density: high
+    edge_entropy: high
+  then: E14
+  weight: 1.25
+  operator: min
+- name: high_component_prefers_e14
+  if:
+    complexity_score: high
+    edge_entropy: high
+    component_density: high
+  then: E14
+  weight: 1.1
+  operator: mean
+- name: medium_dense_entropy_prefers_e0
+  if:
+    line_density: medium
+    edge_entropy: high
+    component_density: medium
+  then: E0
+  weight: 1.2
+  operator: mean
+- name: dense_clean_prefers_e0
+  if:
+    line_density: high
+    component_density: medium
+    complexity_score: medium
+  then: E0
+  weight: 1.0
+  operator: mean
+- name: entropy_with_moderate_components_prefers_e0
+  if:
+    edge_entropy: high
+    component_density: medium
+    blank_ratio: medium
+  then: E0
+  weight: 0.95
+  operator: mean
+selection_policy:
+  mode: e5_default_conservative
+  default_label: E5
+  fallback_to_default: true
+  cost_sensitive_mode: true
+  min_margin: 0.0
+  min_expected_gain: 0.0
+  override_requirements:
+    E0:
+      line_density: medium
+      component_density: medium
+      blank_ratio: medium
+      edge_entropy: high
+    E14:
+      line_density: high
+      component_density: high
+      edge_entropy: high
+    E_FULL:
+      line_density: very_low
+      blank_ratio: high
+      component_density: low
+      complexity_score: low
