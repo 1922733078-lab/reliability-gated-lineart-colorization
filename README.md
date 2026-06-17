@@ -49,7 +49,14 @@ Excluded:
 
 ## Method Overview
 
-The project studies four switchable adapter modules:
+The project studies a reliability-gated configuration-selection workflow for line-art colorization. The repository keeps the reader-facing method roles and the implementation labels connected:
+
+- the fixed ARF+AN route is the conservative baseline (`Fixed E5` in the manuscript, `E5` in code/configuration tables)
+- fuzzy rules propose candidate exceptions
+- replay-based reliability labels and a strict gate decide whether a local exception is authorized
+- the public-data gate records refusal evidence when support or public criteria fail
+
+The four switchable adapter modules are:
 
 - `DW`: dynamic weighting
 - `AT`: adaptive threshold
@@ -202,7 +209,9 @@ artifacts/inference_archive/
 
 ## Reproducibility Scope
 
-This repository supports method inspection and audit-level reproducibility for the selector and reliability-gate logic. It is not a complete public regeneration package because raw training/validation images, trained model weights, generated outputs, private logs, and local machine caches are not redistributed.
+This repository supports method inspection, audit-table reproduction, and decision-trace reproducibility for the selector and reliability-gate logic. It is not a complete public regeneration package because raw training/validation images, trained model weights, generated outputs, private logs, and local machine caches are not redistributed.
+
+Implementation labels such as `E_FULL`, `V1`, `V2`, `v2_strict_only`, `current46`, `top20`, and `edges2shoes_ready` are retained only where they are needed to connect code, audit tables, and release artifacts. They should not be read as public success claims. In particular, `edges2shoes_ready = false` is a public-refusal/deployment-blocking flag, not a failed attempt to claim readiness.
 
 The release is intended to make the following parts inspectable:
 

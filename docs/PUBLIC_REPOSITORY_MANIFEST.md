@@ -24,6 +24,21 @@ This manifest documents what is included in the public repository and what is in
 - `tools/extract_lineart_features.py`
 - `tools/run_minimal_public_validation.py`
 
+## Manuscript Traceability Labels
+
+The manuscript uses natural-language roles for readability and leaves raw implementation labels to the supplement and repository. This repository preserves those labels only for audit traceability:
+
+- `E5` corresponds to the fixed ARF+AN conservative baseline discussed as `Fixed E5`.
+- `E_FULL` is the complete-module negative control, not a success label.
+- `V1` is the aggressive selector variant used as a contrast case for unsafe average-gain selection.
+- `V2` is the reliability-aware selector variant.
+- `v2_strict_only` denotes the strict-only reporting route for surviving local exceptions.
+- `current46` denotes the repository alias for the 46-image local calibration set.
+- `top20` / `shared_validation_selection_top20.json` denote a local 20-image diagnostic subset and its non-release manifest, not an independent public benchmark.
+- `edges2shoes_ready` is a public-refusal/deployment-blocking flag in `tools/run_minimal_public_validation.py`; `false` means public deployment remains blocked.
+
+These labels support audit-table and decision-trace reproducibility. They are not claims of public benchmark success, broad cross-dataset transferability, public deployment readiness, SOTA behavior, or human-preference validation.
+
 ### Configuration templates
 
 - `configs/experiment_config.example.json`
